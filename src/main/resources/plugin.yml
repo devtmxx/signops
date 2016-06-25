@@ -1,0 +1,11 @@
+name: SignOps
+version: ${version}
+main: net.tmxx.signops.SignOps
+authors: [tmxx]
+description: Adds new sign operations to the game
+
+commands:
+  signops:
+    usage: /<command> [args]
+    description: SignOps base command
+    aliases: [so]
