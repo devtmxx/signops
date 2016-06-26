@@ -17,6 +17,12 @@
  */
 package net.tmxx.signops.sign;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.tmxx.signops.util.URLUtil;
+
+import java.util.function.Function;
+
 /**
  * <p>
  *     This is an enumeration of all the possible actions for
@@ -26,14 +32,68 @@ package net.tmxx.signops.sign;
  * @author tmxx
  * @version 1.0
  */
+@RequiredArgsConstructor
 public enum OperationSignAction {
     /**
      * Opens a link for a player.
      */
-    OPEN_LINK,
+    OPEN_LINK( new Function< String, Boolean >() {
+        @Override
+        public Boolean apply( String input ) {
+            return URLUtil.containsURL( input );
+        }
+    }, "<URL>" ),
 
     /**
      * Executes a command for a player.
      */
-    EXECUTE_COMMAND
+    EXECUTE_COMMAND( new Function< String, Boolean >() {
+        @Override
+        public Boolean apply( String input ) {
+            return true;
+        }
+    }, "<Command> [Arguments]" ),
+
+    /**
+     * Applies a vector to a player.
+     */
+    VECTOR( new Function< String, Boolean >() {
+        @Override
+        public Boolean apply( String input ) {
+            String[] split = input.split( ";" );
+            if ( split.length != 3 ) {
+                return false;
+            }
+
+            for ( String string : split ) {
+                try {
+                    Double.parseDouble( string );
+                } catch ( NumberFormatException e ) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }, "<X>;<Y>;<Z>" );
+
+    /**
+     * The function to use when checking the value of an operation sign.
+     */
+    private final Function< String, Boolean > checkFunction;
+
+    /**
+     * The template of the value to insert.
+     */
+    @Getter private final String valueTemplate;
+
+    /**
+     * Checks whether the value of an operation sign is correct.
+     *
+     * @param input The input value of an operation sign.
+     * @return      Whether the value is correct.
+     */
+    public boolean check( String input ) {
+        return this.checkFunction.apply( input );
+    }
 }

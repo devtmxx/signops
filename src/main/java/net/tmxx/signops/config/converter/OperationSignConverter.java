@@ -89,7 +89,7 @@ public class OperationSignConverter implements Converter {
             operationSign.setY( ( Integer ) map.get( "y" ) );
             operationSign.setZ( ( Integer ) map.get( "z" ) );
             operationSign.setOperationSignAction( OperationSignAction.valueOf( ( String ) map.get( "action" ) ) );
-            operationSign.setValue( ( String ) map.get( "value" ) );
+            operationSign.setValue( ( ( String ) map.get( "value" ) ).trim() );
 
             return operationSign;
         }

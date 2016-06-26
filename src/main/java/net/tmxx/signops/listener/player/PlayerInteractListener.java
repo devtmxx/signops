@@ -75,6 +75,7 @@ public class PlayerInteractListener implements Listener {
                 String url = URLUtil.extractURL( stringBuilder.toString() );
 
                 if ( url != null ) {
+                    url = url.trim();
                     TextComponent textComponent = new TextComponent( "§e§lClick here to open link!" );
                     textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, ( url.startsWith( "http://" ) || url.startsWith( "https://" ) ) ? url : "http://" + url ) );
                     textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new TextComponent[] {

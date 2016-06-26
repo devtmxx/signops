@@ -86,4 +86,14 @@ public class URLUtil {
             return null;
         }
     }
+
+    /**
+     * Check whether the specified input string contains an url.
+     *
+     * @param input The input string to check.
+     * @return      Whether the string contains an url.
+     */
+    public static boolean containsURL( String input ) {
+        return URL_PATTERN.matcher( input ).find();
+    }
 }
