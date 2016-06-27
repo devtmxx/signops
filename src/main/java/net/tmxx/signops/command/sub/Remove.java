@@ -19,13 +19,7 @@ package net.tmxx.signops.command.sub;
 
 import net.tmxx.signops.SignOps;
 import net.tmxx.signops.command.SubCommand;
-import net.tmxx.signops.sign.OperationSign;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-
-import java.util.Set;
 
 /**
  * <p>
@@ -61,25 +55,12 @@ public class Remove extends SubCommand {
      */
     @Override
     public void execute( Player player, String[] args ) {
-        Block block = player.getTargetBlock( ( Set< Material > ) null, 5 );
-        if ( block != null && block.getState() instanceof Sign ) {
-            OperationSign operationSign = null;
-
-            for ( OperationSign sign : this.signOps.getMainConfig().getOperationSigns() ) {
-                if ( sign.equalsLocation( block.getLocation() ) ) {
-                    operationSign = sign;
-                }
-            }
-
-            if ( operationSign == null ) {
-                player.sendMessage( "§c§lNo operation found for this sign" );
-            } else {
-                this.signOps.getMainConfig().getOperationSigns().remove( operationSign );
-                this.signOps.getMainConfig().saveConfig();
-                player.sendMessage( "§e§lOperation sign removed" );
-            }
+        if ( this.signOps.getCurrentRemovals().contains( player.getUniqueId() ) ) {
+            player.sendMessage( "§c§lYou are currently removing signs" );
         } else {
-            player.sendMessage( "§c§lThis is no sign" );
+            this.signOps.getCurrentRemovals().add( player.getUniqueId() );
+            player.sendMessage( "§e§lYou are now removing signs" );
+            player.sendMessage( "§e§lPunch a sign to remove all operations from it" );
         }
     }
 }

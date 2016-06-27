@@ -23,8 +23,11 @@ import lombok.ToString;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.tmxx.signops.util.PotionEffectUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 /**
@@ -115,6 +118,19 @@ public class OperationSign {
                 double z = Double.parseDouble( split[ 2 ] );
                 player.setVelocity( new Vector( x, y, z ) );
             }
+            /*case POTION_EFFECT: {
+                if ( this.value.equalsIgnoreCase( "clear" ) ) {
+                    for ( PotionEffect potionEffect : player.getActivePotionEffects() ) {
+                        player.removePotionEffect( potionEffect.getType() );
+                    }
+                } else {
+                    String[] split = this.value.split( ";" );
+                    PotionEffectType potionEffectType = PotionEffectUtil.getTypeByName( split[ 0 ] );
+                    int duration = Integer.parseInt( split[ 1 ] );
+                    int amplifier = Integer.parseInt( split[ 2 ] );
+                    player.addPotionEffect( new PotionEffect( potionEffectType, duration, amplifier ) );
+                }
+            }*/
             default:
                 break;
         }

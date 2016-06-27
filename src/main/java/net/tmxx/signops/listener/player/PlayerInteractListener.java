@@ -31,6 +31,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p>
  *     Listener listening for the {@link org.bukkit.event.player.PlayerInteractEvent}
@@ -61,7 +64,6 @@ public class PlayerInteractListener implements Listener {
                 for ( OperationSign operationSign : this.signOps.getMainConfig().getOperationSigns() ) {
                     if ( operationSign.equalsLocation( event.getClickedBlock().getLocation() ) ) {
                         operationSign.performAction( event.getPlayer() );
-                        return;
                     }
                 }
 
@@ -82,6 +84,47 @@ public class PlayerInteractListener implements Listener {
                             new TextComponent( "§e§l" + url )
                     } ) );
                     event.getPlayer().spigot().sendMessage( textComponent );
+                }
+            }
+        } else if ( event.getAction().equals( Action.LEFT_CLICK_BLOCK ) ) {
+            if ( event.getClickedBlock().getState() instanceof Sign ) {
+                if ( this.signOps.getCurrentRemovals().contains( event.getPlayer().getUniqueId() ) ) {
+                    List<OperationSign> operationSignList = new ArrayList<>();
+
+                    for ( OperationSign operationSign : this.signOps.getMainConfig().getOperationSigns() ) {
+                        if ( operationSign.equalsLocation( event.getClickedBlock().getLocation() ) ) {
+                            operationSignList.add( operationSign );
+                        }
+                    }
+
+                    if ( operationSignList.isEmpty() ) {
+                        event.getPlayer().sendMessage( "§c§lNo operations to remove here" );
+                        this.signOps.getCurrentRemovals().remove( event.getPlayer().getUniqueId() );
+                        event.setCancelled( true );
+                    } else {
+                        for ( OperationSign operationSign : operationSignList ) {
+                            this.signOps.getMainConfig().getOperationSigns().remove( operationSign );
+                        }
+                        this.signOps.getMainConfig().saveConfig();
+                        this.signOps.getCurrentRemovals().remove( event.getPlayer().getUniqueId() );
+                        event.getPlayer().sendMessage( "§e§lRemoved sign operations" );
+                        event.setCancelled( true );
+                    }
+                } else {
+                    OperationSign operationSign = this.signOps.getCurrentSetups().get( event.getPlayer().getUniqueId() );
+                    if ( operationSign != null ) {
+                        operationSign.setWorld( event.getClickedBlock().getWorld().getName() );
+                        operationSign.setX( event.getClickedBlock().getX() );
+                        operationSign.setY( event.getClickedBlock().getY() );
+                        operationSign.setZ( event.getClickedBlock().getZ() );
+
+                        this.signOps.getMainConfig().getOperationSigns().add( operationSign );
+                        this.signOps.getMainConfig().saveConfig();
+                        this.signOps.getCurrentSetups().remove( event.getPlayer().getUniqueId() );
+
+                        event.getPlayer().sendMessage( "§e§lSuccessfully applied values to operation sign" );
+                        event.setCancelled( true );
+                    }
                 }
             }
         }

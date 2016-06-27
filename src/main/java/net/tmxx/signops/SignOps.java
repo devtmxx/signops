@@ -27,8 +27,16 @@ import net.tmxx.signops.config.MainConfig;
 import net.tmxx.signops.listener.block.BlockBreakListener;
 import net.tmxx.signops.listener.player.PlayerInteractListener;
 import net.tmxx.signops.listener.block.SignChangeListener;
+import net.tmxx.signops.sign.OperationSign;
+import net.tmxx.signops.util.PotionEffectUtil;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -43,6 +51,16 @@ public class SignOps extends JavaPlugin {
      * The main configuration of sign ops.
      */
     @Getter private MainConfig mainConfig;
+
+    /**
+     * Map of operation signs and the users setting them up.
+     */
+    @Getter private Map<UUID, OperationSign> currentSetups = new HashMap<>();
+
+    /**
+     * List of all users which are currently removing operation signs.
+     */
+    @Getter private List<UUID> currentRemovals = new ArrayList<>();
 
     /**
      * Invoked when this plugin is being enabled.

@@ -19,8 +19,11 @@ package net.tmxx.signops.sign;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.tmxx.signops.util.PotionEffectUtil;
 import net.tmxx.signops.util.URLUtil;
+import org.bukkit.potion.PotionEffectType;
 
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 /**
@@ -76,6 +79,25 @@ public enum OperationSignAction {
             return true;
         }
     }, "<X>;<Y>;<Z>" );
+
+    /*POTION_EFFECT( new Function< String, Boolean >() {
+        @Override
+        public Boolean apply( String input ) {
+            if ( input.equalsIgnoreCase( "clear" ) ) {
+                return true;
+            }
+            String[] split = input.split( ";" );
+            if ( split.length != 3 ) {
+                return false;
+            }
+
+            try {
+                return PotionEffectUtil.isPotionEffectType( split[ 0 ] ) && Integer.parseInt( split[ 1 ] ) != 0 && Integer.parseInt( split[ 2 ] ) != 0;
+            } catch ( Exception e ) {
+                return false;
+            }
+        }
+    }, "<PotionEffectType>;<Duration>;<Amplifier>" );*/
 
     /**
      * The function to use when checking the value of an operation sign.

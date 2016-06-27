@@ -21,12 +21,7 @@ import net.tmxx.signops.SignOps;
 import net.tmxx.signops.command.SubCommand;
 import net.tmxx.signops.sign.OperationSign;
 import net.tmxx.signops.sign.OperationSignAction;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-
-import java.util.Set;
 
 /**
  * <p>
@@ -62,58 +57,36 @@ public class Add extends SubCommand {
      */
     @Override
     public void execute( Player player, String[] args ) {
-        Block block = player.getTargetBlock( ( Set< Material > ) null, 5 );
-        if ( block != null && block.getState() instanceof Sign ) {
-            if ( args.length < 2 ) {
+        if ( args.length < 2 ) {
+            this.sendInfo( player );
+        } else {
+            try {
+                OperationSignAction operationSignAction = OperationSignAction.valueOf( args[ 0 ] );
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for ( int i = 1; i < args.length; i++ ) {
+                    stringBuilder.append( args[ i ] ).append( " " );
+                }
+
+                OperationSign operationSign = new OperationSign();
+
+                if ( !operationSignAction.check( stringBuilder.toString().trim() ) ) {
+                    player.sendMessage( "§c§lThe input value is not correct§8§l: §e§l" + operationSignAction.getValueTemplate() );
+                    return;
+                }
+                operationSign.setOperationSignAction( operationSignAction );
+                operationSign.setValue( stringBuilder.toString().trim() );
+                this.signOps.getCurrentSetups().put( player.getUniqueId(), operationSign );
+
+                player.sendMessage( "§e§lSetting up operation sign with action §c§l" + operationSignAction.name() + " §e§land value §c§l" + stringBuilder.toString() );
+                player.sendMessage( "§e§lPunch the sign to apply those values to" );
+            } catch ( Exception e ) {
                 this.sendInfo( player );
-            } else {
-                try {
-                    OperationSignAction operationSignAction = OperationSignAction.valueOf( args[ 0 ] );
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    for ( int i = 1; i < args.length; i++ ) {
-                        stringBuilder.append( args[ i ] ).append( " " );
-                    }
-
-                    OperationSign operationSign = null;
-
-                    for ( OperationSign sign : this.signOps.getMainConfig().getOperationSigns() ) {
-                        if ( sign.equalsLocation( block.getLocation() ) ) {
-                            operationSign = sign;
-                        }
-                    }
-
-                    if ( operationSign == null ) {
-                        operationSign = new OperationSign();
-                        operationSign.setWorld( block.getWorld().getName() );
-                        operationSign.setX( block.getX() );
-                        operationSign.setY( block.getY() );
-                        operationSign.setZ( block.getZ() );
-
-                        this.signOps.getMainConfig().getOperationSigns().add( operationSign );
-                    }
-
-                    if ( !operationSignAction.check( stringBuilder.toString().trim() ) ) {
-                        player.sendMessage( "§c§lThe input value is not correct§8§l: §e§l" + operationSignAction.getValueTemplate() );
-                        this.signOps.getMainConfig().getOperationSigns().remove( operationSign );
-                        this.signOps.getMainConfig().saveConfig();
-                        return;
-                    }
-                    operationSign.setOperationSignAction( operationSignAction );
-                    operationSign.setValue( stringBuilder.toString().trim() );
-
-                    this.signOps.getMainConfig().saveConfig();
-                    player.sendMessage( "§e§lOperation sign saved with action §c§l" + operationSignAction.name() + " §e§land value §c§l" + stringBuilder.toString() );
-                } catch ( Exception e ) {
-                    this.sendInfo( player );
-                    player.sendMessage( "§e§lValid operation sign actions:" );
-                    for ( OperationSignAction action : OperationSignAction.values() ) {
-                        player.sendMessage( "   §7- §c§l" + action.name() + " §8§l[§e§l" + action.getValueTemplate() + "§8§l]" );
-                    }
+                player.sendMessage( "§e§lValid operation sign actions:" );
+                for ( OperationSignAction action : OperationSignAction.values() ) {
+                    player.sendMessage( "   §7- §c§l" + action.name() + " §8§l[§e§l" + action.getValueTemplate() + "§8§l]" );
                 }
             }
-        } else {
-            player.sendMessage( "§c§lThis is no sign" );
         }
     }
 }

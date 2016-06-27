@@ -25,6 +25,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p>
  *     Listener listening for the {@link org.bukkit.event.block.BlockBreakEvent}
@@ -49,16 +52,18 @@ public class BlockBreakListener implements Listener {
     @EventHandler
     public void onBlockBreak( BlockBreakEvent event ) {
         if ( event.getBlock().getState() instanceof Sign ) {
-            OperationSign operationSign = null;
+            List<OperationSign> operationSignList = new ArrayList<>();
 
             for ( OperationSign sign : this.signOps.getMainConfig().getOperationSigns() ) {
                 if ( sign.equalsLocation( event.getBlock().getLocation() ) ) {
-                    operationSign = sign;
+                    operationSignList.add( sign );
                 }
             }
 
-            if ( operationSign != null ) {
-                this.signOps.getMainConfig().getOperationSigns().remove( operationSign );
+            if ( !operationSignList.isEmpty() ) {
+                for ( OperationSign operationSign : operationSignList ) {
+                    this.signOps.getMainConfig().getOperationSigns().remove( operationSign );
+                }
                 this.signOps.getMainConfig().saveConfig();
                 event.getPlayer().sendMessage( "§e§lRemoved operation sign" );
             }
