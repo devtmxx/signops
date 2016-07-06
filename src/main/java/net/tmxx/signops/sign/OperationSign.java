@@ -24,8 +24,10 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.tmxx.signops.util.PotionEffectUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -108,7 +110,11 @@ public class OperationSign {
                 break;
             }
             case EXECUTE_COMMAND: {
-                player.performCommand( this.value );
+                PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent( player, this.value );
+                Bukkit.getPluginManager().callEvent( playerCommandPreprocessEvent );
+                if ( !playerCommandPreprocessEvent.isCancelled() ) {
+                    player.performCommand( this.value );
+                }
                 break;
             }
             case VECTOR: {
